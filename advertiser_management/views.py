@@ -7,8 +7,6 @@ from django.views.generic.edit import CreateView
 def index(request):
     context = {'advertisers': Advertiser.objects.iterator()}
     for ad in Ad.objects.all():
-        ad.views += 1
-        ad.advertiser.views += 1
         ad.save()
         ad.advertiser.save()
     return render(request, 'advertiser_management/ads.html', context=context)
@@ -16,8 +14,6 @@ def index(request):
 
 def ad(request, ad_id):
     ad = Ad.get_ad(ad_id)
-    ad.clicks += 1
-    ad.advertiser.clicks += 1
     ad.save()
     return redirect(ad.link)
 
