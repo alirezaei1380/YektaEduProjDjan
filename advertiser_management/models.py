@@ -24,7 +24,7 @@ class CommonInfo(models.Model):
     id = models.AutoField(primary_key=True)
     ad_id = models.IntegerField()
     time = models.DateTimeField()
-    ip = models.CharField()
+    ip = models.CharField(max_length=50)
 
     class Meta:
         abstract = True

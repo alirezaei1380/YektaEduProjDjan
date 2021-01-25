@@ -49,6 +49,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'advertiser_management.middleware.ClickMiddleware',
+    'advertiser_management.middleware.ViewMiddleware'
 ]
 
 ROOT_URLCONF = 'YektaEduProjDjan.urls'
