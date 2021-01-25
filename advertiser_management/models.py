@@ -1,16 +1,15 @@
 from django.db import models
-import random
 
 
 class Advertiser(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    id = models.IntegerField(primary_key=True, default=random.randint(10000, 20000), editable=False, unique=True)
+    id = models.AutoField(primary_key=True)
     clicks = models.IntegerField(default=0, auto_created=True, editable=False)
     views = models.IntegerField(default=0, auto_created=True, editable=False)
 
 
 class Ad(models.Model):
-    id = models.IntegerField(primary_key=True, default=random.randint(10000, 20000), editable=False, unique=True)
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=50)
     clicks = models.IntegerField(default=0, auto_created=True, editable=False)
     views = models.IntegerField(default=0, auto_created=True, editable=False)
