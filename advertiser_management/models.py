@@ -12,6 +12,7 @@ class Ad(models.Model):
     link = models.CharField(max_length=100)
     image = models.ImageField(default='', upload_to='images/')
     advertiser = models.ForeignKey(Advertiser, on_delete=models.CASCADE)
+    approve = models.BooleanField(default=False)
 
     @staticmethod
     def get_ad(ad_id):
