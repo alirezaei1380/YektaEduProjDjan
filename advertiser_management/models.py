@@ -5,6 +5,9 @@ class Advertiser(models.Model):
     name = models.CharField(max_length=50, unique=True)
     id = models.AutoField(primary_key=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Ad(models.Model):
     id = models.AutoField(primary_key=True)
@@ -13,6 +16,9 @@ class Ad(models.Model):
     image = models.ImageField(default='', upload_to='images/')
     advertiser = models.ForeignKey(Advertiser, on_delete=models.CASCADE)
     approve = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
 
     @staticmethod
     def get_ad(ad_id):
