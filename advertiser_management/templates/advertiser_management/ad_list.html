@@ -6,10 +6,10 @@
           crossorigin="anonymous">
     <title>Ad View</title>
 </head>
-<button onclick="location.href='{% url 'AdView' %}'">Add ad</button>
+<button onclick="location.href='{% url 'AdFormView' %}'">Add ad</button>
 <body>
 <div class="container" dir="rtl">
-    {% for advertiser in advertisers %}
+    {% for advertiser in object_list %}
         <div class="card mt-2 p-2">
             <h5 class="card-title">{{ advertiser.name }}</h5>
             <div class="card-body">

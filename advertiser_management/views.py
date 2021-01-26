@@ -1,14 +1,18 @@
-from django.shortcuts import render
 from .models import Ad
 from .models import Advertiser
 from django.views.generic.edit import CreateView
 from django.views.generic.base import RedirectView
 from django.shortcuts import get_object_or_404
+from django.views.generic.list import ListView
 
 
-def index(request):
-    context = {'advertisers': Advertiser.objects.iterator()}
-    return render(request, 'advertiser_management/ads.html', context=context)
+class AdListView(ListView):
+    model = Advertiser
+    template_name = 'advertiser_management/ad_list.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(AdListView, self).get_context_data(**kwargs)
+        return context
 
 
 class AdRedirectView(RedirectView):
