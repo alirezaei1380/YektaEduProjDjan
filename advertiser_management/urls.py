@@ -5,6 +5,6 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('<int:ad_id>/', views.ad, name='ad'),
-    path('ad_form/', views.AdView.as_view(), name='AdView')
+    path('<int:ad_id>/', views.AdRedirectView.as_view(), name='ad_link'),
+    path('ad_form/', views.AdFormView.as_view(), name='AdView')
 ]

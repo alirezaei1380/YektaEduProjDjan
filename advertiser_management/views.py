@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .models import Ad
 from .models import Advertiser
 from django.views.generic.edit import CreateView
+from django.views.generic.base import RedirectView
+from django.shortcuts import get_object_or_404
 
 
 def index(request):
@@ -9,12 +11,15 @@ def index(request):
     return render(request, 'advertiser_management/ads.html', context=context)
 
 
-def ad(request, ad_id):
-    ad = Ad.get_ad(ad_id)
-    return redirect(ad.link)
+class AdRedirectView(RedirectView):
+    pattern_name = 'ad_link'
+
+    def get_redirect_url(self, *args, **kwargs):
+        ad = get_object_or_404(Ad, id=kwargs['ad_id'])
+        return ad.link
 
 
-class AdView(CreateView):
+class AdFormView(CreateView):
     model = Ad
     template_name = 'advertiser_management/ad_form.html'
     fields = ['title', 'link', 'image', 'advertiser']
