@@ -20,12 +20,6 @@ class Ad(models.Model):
     def __str__(self):
         return self.title
 
-    @staticmethod
-    def get_ad(ad_id):
-        for ad in Ad.objects.all():
-            if ad.id == ad_id:
-                return ad
-
 
 class CommonInfo(models.Model):
     id = models.AutoField(primary_key=True)

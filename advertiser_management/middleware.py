@@ -22,8 +22,7 @@ class ViewMiddleware:
     def __call__(self, request):
         if request.path.endswith("advertiser_management/"):
             for ad in Ad.objects.all():
-                view = View(ad_id=ad.id, time=datetime.datetime.now(), ip=get_ip(request))
-                view.save()
+                View.objects.create(ad_id=ad.id, time=datetime.datetime.now(), ip=get_ip(request))
         response = self.get_response(request)
         return response
 
@@ -36,7 +35,6 @@ class ClickMiddleware:
     def __call__(self, request):
         match = re.match("/advertiser_management/(\d+)/", request.path)
         if match:
-            click = Click(ad_id=match.group(1), time=datetime.datetime.now(), ip=get_ip(request))
-            click.save()
+            Click.objects.create(ad_id=match.group(1), time=datetime.datetime.now(), ip=get_ip(request))
         response = self.get_response(request)
         return response
