@@ -21,4 +21,5 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('advertiser_management/', include('advertiser_management.urls')),
     path('admin/', admin.site.urls),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('api-auth/', include('rest_framework.urls'))
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
