@@ -18,7 +18,7 @@ class ReportView(TemplateView):
     @staticmethod
     def get_sum_by_id(model):
         return model.objects.annotate(date=TruncHour('time')).values('date', 'ad_id')\
-            .annotate(count=Count('ad_id')).values('date', 'ad_id', 'count')
+            .annotate(count=Count('ad_id')).values('ad_id', 'time', 'count')
 
     @staticmethod
     def get_sum(model):
@@ -27,8 +27,8 @@ class ReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ReportView, self).get_context_data(**kwargs)
-        context['view_sum'] = ReportView.get_sum_by_id(View)
-        context['click_sum'] = ReportView.get_sum_by_id(Click)
+        context['view_sum'] = list(ReportView.get_sum_by_id(View))
+        context['click_sum'] = list(ReportView.get_sum_by_id(Click))
         context['click_view_rate_sum'] = ReportView.count(Click) / ReportView.count(View)
         views = list(ReportView.get_sum(View))
         clicks = dict(ReportView.get_sum(Click))
@@ -41,8 +41,9 @@ class ReportView(TemplateView):
         clicks = Click.objects.all()
         views = View.objects.all()
         for click in clicks:
-            time_difference['ad_id:'+click.ad_id.__str__()] = click.time - views.filter(ad_id=click.ad_id, ip=click.ip)\
-                .order_by('time').first().time
+            time_difference['ad_id:'+repr(click.ad_id)] = click.time - views.filter(ad_id=click.ad_id, ip=click.ip,
+                                                                                    time__lt=click.time)\
+                .order_by('-time').first().time
         context['click_view_time_difference_average'] = time_difference
         return context
 
