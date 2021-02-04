@@ -3,12 +3,9 @@ from django.views.generic.edit import CreateView
 from django.views.generic.base import RedirectView, TemplateView
 from django.shortcuts import get_object_or_404
 from django.views.generic.list import ListView
-from django.db.models import Count
+from django.db.models import Count, F
 from django.db.models.functions import TruncHour
-from rest_framework.generics import CreateAPIView
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import AdSerializer
+import datetime
 
 
 class ReportView(TemplateView):
@@ -21,7 +18,7 @@ class ReportView(TemplateView):
     @staticmethod
     def get_sum_by_id(model):
         return model.objects.annotate(date=TruncHour('time')).values('date', 'ad_id')\
-            .annotate(count=Count('ad_id')).values('ad_id', 'date', 'count')
+            .annotate(count=Count('ad_id')).values('ad_id', 'time', 'count')
 
     @staticmethod
     def get_sum(model):
@@ -68,11 +65,8 @@ class AdRedirectView(RedirectView):
         return ad.link
 
 
-class AdFormView(CreateAPIView):
+class AdFormView(CreateView):
     model = Ad
-    authentication_classes = {TokenAuthentication}
-    permission_classes = {IsAuthenticated}
-    serializer_class = AdSerializer
     template_name = 'advertiser_management/ad_form.html'
     fields = ['title', 'link', 'image', 'advertiser']
     success_url = 'http://127.0.0.1:8000/advertiser_management/'
