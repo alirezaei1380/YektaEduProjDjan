@@ -45,3 +45,18 @@ class View(CommonInfo):
 class Click(CommonInfo):
     pass
 
+
+class CommonReportInfo(models.Model):
+
+    ad_id = models.IntegerField()
+    time = models.DateTimeField()
+    views = models.IntegerField()
+    clicks = models.IntegerField()
+
+
+class ReportHourly(CommonReportInfo):
+    pass
+
+
+class ReportDaily(CommonReportInfo):
+    pass

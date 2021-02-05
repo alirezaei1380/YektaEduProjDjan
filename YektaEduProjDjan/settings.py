@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -143,3 +144,19 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_TIMEZONE = 'Asia/Tehran'
+#app.conf.enable_utc = False
+CELERY_BEAT_SCHEDULE = {}
+
+CELERY_BEAT_SCHEDULE = {
+    'send-summary-every-hour': {
+       'task': 'report_hourly',
+       'schedule': 3600.0
+    },
+    'send-summary-every-day': {
+       'task': 'report_hourly',
+       'schedule': 3600.0 * 24
+    },
+}
