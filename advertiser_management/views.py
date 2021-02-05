@@ -5,9 +5,17 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.list import ListView
 from django.db.models import Count
 from django.db.models.functions import TruncHour
+from rest_framework.generics import CreateAPIView, ListAPIView, GenericAPIView
+from .serializers import AdSerializer, AdvertiserSerializer
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.response import Response
 
 
-class ReportView(TemplateView):
+class ReportView(TemplateView, GenericAPIView):
+    permission_classes = [IsAdminUser]
+    authentication_classes = [TokenAuthentication]
     template_name = 'advertiser_management/report.html'
 
     @staticmethod
@@ -47,7 +55,9 @@ class ReportView(TemplateView):
         return context
 
 
-class AdListView(ListView):
+class AdListView(ListView, ListAPIView):
+    permission_classes = [AllowAny]
+    authentication_classes = [TokenAuthentication]
     model = Advertiser
     template_name = 'advertiser_management/ad_list.html'
 
@@ -64,8 +74,38 @@ class AdRedirectView(RedirectView):
         return ad.link
 
 
-class AdFormView(CreateView):
+class AdFormView(CreateView, CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
     model = Ad
     template_name = 'advertiser_management/ad_form.html'
     fields = ['title', 'link', 'image', 'advertiser']
     success_url = 'http://127.0.0.1:8000/advertiser_management/'
+
+
+class AdView(ModelViewSet):
+
+    serializer_class = AdSerializer
+    queryset = Ad.objects.all()
+
+    def list(self, request):
+        serializer = AdSerializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        ad = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = AdSerializer(ad)
+        return Response(serializer.data)
+
+    def create(self, request):
+        queryset = self.get_queryset()
+        queryset.create(request.data)
+
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'create':
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
