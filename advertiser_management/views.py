@@ -18,39 +18,15 @@ from rest_framework.views import APIView
 def count(model):
     return model.objects.count()
 
+
 def get_sum_by_id(model):
     return model.objects.annotate(date=TruncHour('time')).values('date', 'ad_id')\
         .annotate(count=Count('ad_id')).values('ad_id', 'date', 'count')
 
+
 def get_sum(model):
      return model.objects.annotate(date=TruncHour('time')).values('date').\
         annotate(count=Count('date')).values_list('date', 'count')
-
-
-class ReportView(TemplateView):
-    template_name = 'advertiser_management/report.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(ReportView, self).get_context_data(**kwargs)
-        context['view_sum'] = list(get_sum_by_id(View))
-        context['click_sum'] = list(get_sum_by_id(Click))
-        context['click_view_rate_sum'] = count(Click) / count(View)
-        views = list(get_sum(View))
-        clicks = dict(get_sum(Click))
-        click_view_rate = {}
-        for view in views:
-            click_view_rate[view[0]] = clicks.get(view[0], 0) / view[1]
-        context['click_view_rate'] = {k: v for k, v in sorted(click_view_rate.items(),
-                                                              key=lambda item: item[1], reverse=True)}
-        time_difference = {}
-        clicks = Click.objects.all()
-        views = View.objects.all()
-        for click in clicks:
-            time_difference['ad_id:'+repr(click.ad_id)] = click.time - views.filter(ad_id=click.ad_id, ip=click.ip,
-                                                                                    time__lt=click.time)\
-                .order_by('-time').first().time
-        context['click_view_time_difference_average'] = time_difference
-        return context
 
 
 class AdListView(ListView):
@@ -94,14 +70,14 @@ class AdView(ModelViewSet):
 
 class ReportAPIView(APIView):
 
-    def report(self, request):
+    def get(self, request):
         data = {}
-        data['view_sum'] = list(get_sum_by_id(View))
-        data['click_sum'] = list(get_sum_by_id(Click))
+        data['view_sum'] = list(get_sum_by_id(View).values_list())
+        data['click_sum'] = list(get_sum_by_id(Click).values_list())
         data['click_view_rate_sum'] = count(Click) / count(View)
-        data['report_hourly'] = list(ReportHourly.objects.all())
-        data['report_daily'] = list(ReportDaily.objects.all())
-        views = list(get_sum(View))
+        data['report_hourly'] = list(ReportHourly.objects.all().values_list())
+        data['report_daily'] = list(ReportDaily.objects.all().values_list())
+        views = list(get_sum(View).values_list())
         clicks = dict(get_sum(Click))
         click_view_rate = {}
         for view in views:
@@ -116,6 +92,7 @@ class ReportAPIView(APIView):
                                                                                       time__lt=click.time) \
                 .order_by('-time').first().time
         data['click_view_time_difference_average'] = time_difference
+        print(data)
         return Response(data)
 
 

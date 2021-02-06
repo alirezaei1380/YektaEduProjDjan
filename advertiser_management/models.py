@@ -30,7 +30,8 @@ class Ad(models.Model):
 
 
 class CommonInfo(models.Model):
-    ad_id = models.ForeignKey(Ad, models.CASCADE)
+    #ad_id = models.ForeignKey(Ad, models.CASCADE)
+    ad_id = models.IntegerField()
     time = models.DateTimeField()
     ip = models.CharField(max_length=50)
 
@@ -48,7 +49,8 @@ class Click(CommonInfo):
 
 class CommonReportInfo(models.Model):
 
-    ad_id = models.ForeignKey(Ad, on_delete=models.CASCADE)
+    #ad_id = models.ForeignKey(Ad, on_delete=models.CASCADE)
+    ad_id = models.IntegerField()
     time = models.DateTimeField()
     views = models.IntegerField()
     clicks = models.IntegerField()
