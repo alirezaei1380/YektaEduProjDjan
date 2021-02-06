@@ -92,7 +92,7 @@ class AdView(ModelViewSet):
         return [permission() for permission in permission_classes]
 
 
-class ReportView(APIView):
+class ReportAPIView(APIView):
 
     def report(self, request):
         data = {}
