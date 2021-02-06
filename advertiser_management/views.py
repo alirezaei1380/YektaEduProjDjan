@@ -1,4 +1,4 @@
-from .models import Ad, Advertiser, View, Click
+from .models import Ad, Advertiser, View, Click, ReportDaily, ReportHourly
 from django.views.generic.edit import CreateView
 from django.views.generic.base import RedirectView, TemplateView
 from django.shortcuts import get_object_or_404
@@ -12,6 +12,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 import json
+from rest_framework.views import APIView
 
 
 def count(model):
@@ -90,11 +91,16 @@ class AdView(ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
 
+
+class ReportView(APIView):
+
     def report(self, request):
         data = {}
         data['view_sum'] = list(get_sum_by_id(View))
         data['click_sum'] = list(get_sum_by_id(Click))
         data['click_view_rate_sum'] = count(Click) / count(View)
+        data['report_hourly'] = list(ReportHourly.objects.all())
+        data['report_daily'] = list(ReportDaily.objects.all())
         views = list(get_sum(View))
         clicks = dict(get_sum(Click))
         click_view_rate = {}
@@ -130,17 +136,11 @@ class ClickView(ModelViewSet):
 
     serializer_class = ClickSerializer
     queryset = Advertiser.objects.all()
-
-    def get_permissions(self):
-        permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes]
+    permission_classes = [IsAdminUser]
 
 
 class ViewView(ModelViewSet):
 
     serializer_class = ViewSerializer
     queryset = Advertiser.objects.all()
-
-    def get_permissions(self):
-        permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes]
+    permission_classes = [IsAdminUser]
